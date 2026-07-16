@@ -11,7 +11,34 @@ import ClientesPanel from './admin/ClientesPanel';
 import IncidentesPanel from './admin/IncidentesPanel';
 import AdminsPanel from './admin/AdminsPanel';
 import DireccionInput from '../components/ui/DireccionInput';
+import { Polygon } from 'react-leaflet';
 
+// Utilidad nativa ligera para calcular los bordes de un hexágono H3 (res 8 ~700m)
+const getHexagonPolygon = (lat, lng, radiusMeters = 700) => {
+  const points = [];
+  for (let i = 0; i < 6; i++) {
+    const angle_deg = 60 * i - 30; // Rotación para hexágono con punta arriba
+    const angle_rad = Math.PI / 180 * angle_deg;
+    const dLat = (radiusMeters * Math.sin(angle_rad)) / 111320;
+    const dLng = (radiusMeters * Math.cos(angle_rad)) / (111320 * Math.cos(lat * (Math.PI / 180)));
+    points.push([lat + dLat, lng + dLng]);
+  }
+  return points;
+};
+
+// Aproximación del vecindario k=1 de H3 (aprox 1500m a la redonda)
+const haversineDist = (lat1, lon1, lat2, lon2) => {
+  const R = 6371e3;
+  const p1 = lat1 * Math.PI/180;
+  const p2 = lat2 * Math.PI/180;
+  const dp = (lat2-lat1) * Math.PI/180;
+  const dl = (lon2-lon1) * Math.PI/180;
+  const a = Math.sin(dp/2) * Math.sin(dp/2) +
+            Math.cos(p1) * Math.cos(p2) *
+            Math.sin(dl/2) * Math.sin(dl/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c;
+};
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('radar');
   
@@ -422,6 +449,51 @@ const AdminDashboard = () => {
                   <Polyline positions={[[olat, olng], [dlat, dlng]]} color="#ea6093" dashArray="5, 10" />
                 </React.Fragment>
               );
+            }
+            return null;
+          })}
+          {/* Capa Dinámica de Hexágonos de Escasez H3 */}
+          {faenas.filter(f => ['programada', 'ofrecida'].includes(f.estado)).map(f => {
+            let ocoords = null;
+            if (typeof f.origen === 'string') ocoords = parseEWKB(f.origen);
+            else if (f.origen?.type === 'Point') ocoords = [f.origen.coordinates[1], f.origen.coordinates[0]];
+            
+            if (ocoords) {
+              const [olat, olng] = ocoords;
+              
+              // Lógica Adaptador k=1 (Búsqueda en anillo H3 aproximado a 1500m)
+              let isHotZone = true;
+              Object.values(choferesPos).forEach(pos => {
+                if (pos.estado === 'disponible') {
+                  const dist = haversineDist(olat, olng, pos.lat, pos.lng);
+                  if (dist <= 1500) {
+                    isHotZone = false;
+                  }
+                }
+              });
+
+              if (isHotZone) {
+                const hexPolygon = getHexagonPolygon(olat, olng, 700); // 700m radio = Res 8
+                return (
+                  <Polygon 
+                    key={`h3-escasez-${f.id}`}
+                    positions={hexPolygon} 
+                    pathOptions={{ 
+                      fillColor: '#ff4444', 
+                      fillOpacity: 0.35, 
+                      color: '#ff4444', 
+                      weight: 1, 
+                      dashArray: '3, 6' 
+                    }}
+                  >
+                    <Popup>
+                      Zona de Escasez<br/>
+                      H3: <strong>{f.origen_h3_res8 || 'Autocalculando...'}</strong><br/>
+                      Sin flota disponible en anillo k=1
+                    </Popup>
+                  </Polygon>
+                );
+              }
             }
             return null;
           })}
