@@ -1,0 +1,4 @@
+DRIFT TEST PASS: PL/pgSQL y Python devolvieron exactamente los mismos resultados para los 100 escenarios.
+
+--- EJECUTANDO DRIFT TESTS DE CANCELACION ---
+CANCELACION DRIFT TEST PASS

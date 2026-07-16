@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+/* =========================================================================
+   SISTEMA DE DISEÑO GEBO (UI/UX PREMIUM)
+   ========================================================================= */
+
+:root {
+  /* Paleta Corporativa (Extraída del Logo) */
+  --bg-slate: #20232b;          /* Fondo muy oscuro y elegante (Dark Slate) */
+  --bg-slate-light: #2c303b;    /* Superficies elevadas */
+  
+  --accent-magenta: #ea6093;    /* Rosa vibrante del isotipo */
+  --accent-magenta-glow: rgba(234, 96, 147, 0.4); 
+  --accent-pink: #f490ad;       /* Rosa claro del isotipo para gradientes */
+  
+  --text-primary: #ffffff;
+  --text-secondary: #9ba1b0;
+
+  /* Tipografía Geométrica */
+  --font-main: 'Outfit', system-ui, -apple-system, sans-serif;
+}
+
+/* Reset Básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-slate);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden; /* Evita el scroll elástico en móviles para que parezca app nativa */
+}
+
+/* Utilidades Premium */
+.glass-effect {
+  background: rgba(44, 48, 59, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-magenta) 0%, var(--accent-pink) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glow-shadow {
+  box-shadow: 0 0 20px var(--accent-magenta-glow);
+}
+
+/* Evitar selección de texto en la app móvil */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}

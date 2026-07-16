@@ -1,0 +1,802 @@
+[
+  {
+    "viaje_id": 0,
+    "pasajeros": 6,
+    "asignado_original": "v_0_0",
+    "asignado_fallback_15s": "v_0_3",
+    "demora_calc_min": 15,
+    "penalizacion_uyu": 500.0
+  },
+  {
+    "viaje_id": 1,
+    "pasajeros": 6,
+    "asignado_original": "v_1_3",
+    "asignado_fallback_15s": "v_1_2",
+    "demora_calc_min": 14,
+    "penalizacion_uyu": 450.0
+  },
+  {
+    "viaje_id": 2,
+    "pasajeros": 3,
+    "asignado_original": "v_2_0",
+    "asignado_fallback_15s": "v_2_3",
+    "demora_calc_min": 3,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 3,
+    "pasajeros": 4,
+    "asignado_original": "v_3_4",
+    "asignado_fallback_15s": "v_3_2",
+    "demora_calc_min": 21,
+    "penalizacion_uyu": 800.0
+  },
+  {
+    "viaje_id": 4,
+    "pasajeros": 1,
+    "asignado_original": "v_4_2",
+    "asignado_fallback_15s": "v_4_0",
+    "demora_calc_min": 7,
+    "penalizacion_uyu": 100.0
+  },
+  {
+    "viaje_id": 5,
+    "pasajeros": 3,
+    "asignado_original": "v_5_1",
+    "asignado_fallback_15s": "v_5_2",
+    "demora_calc_min": 18,
+    "penalizacion_uyu": 650.0
+  },
+  {
+    "viaje_id": 6,
+    "pasajeros": 1,
+    "asignado_original": "v_6_4",
+    "asignado_fallback_15s": "v_6_1",
+    "demora_calc_min": 12,
+    "penalizacion_uyu": 350.0
+  },
+  {
+    "viaje_id": 7,
+    "pasajeros": 5,
+    "asignado_original": "v_7_2",
+    "asignado_fallback_15s": "v_7_0",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 8,
+    "pasajeros": 3,
+    "asignado_original": "v_8_3",
+    "asignado_fallback_15s": "v_8_2",
+    "demora_calc_min": 2,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 9,
+    "pasajeros": 5,
+    "asignado_original": "v_9_2",
+    "asignado_fallback_15s": "v_9_1",
+    "demora_calc_min": 2,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 10,
+    "pasajeros": 4,
+    "asignado_original": "v_10_2",
+    "asignado_fallback_15s": "v_10_0",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 11,
+    "pasajeros": 4,
+    "asignado_original": "v_11_4",
+    "asignado_fallback_15s": "v_11_0",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 12,
+    "pasajeros": 4,
+    "asignado_original": "v_12_4",
+    "asignado_fallback_15s": "v_12_2",
+    "demora_calc_min": 13,
+    "penalizacion_uyu": 400.0
+  },
+  {
+    "viaje_id": 13,
+    "pasajeros": 4,
+    "asignado_original": "v_13_0",
+    "asignado_fallback_15s": "v_13_1",
+    "demora_calc_min": 11,
+    "penalizacion_uyu": 300.0
+  },
+  {
+    "viaje_id": 14,
+    "pasajeros": 3,
+    "asignado_original": "v_14_4",
+    "asignado_fallback_15s": "v_14_0",
+    "demora_calc_min": 11,
+    "penalizacion_uyu": 300.0
+  },
+  {
+    "viaje_id": 15,
+    "pasajeros": 3,
+    "asignado_original": "v_15_4",
+    "asignado_fallback_15s": "v_15_0",
+    "demora_calc_min": 3,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 16,
+    "pasajeros": 3,
+    "asignado_original": "v_16_3",
+    "asignado_fallback_15s": "v_16_2",
+    "demora_calc_min": 17,
+    "penalizacion_uyu": 600.0
+  },
+  {
+    "viaje_id": 17,
+    "pasajeros": 4,
+    "asignado_original": "v_17_2",
+    "asignado_fallback_15s": "v_17_4",
+    "demora_calc_min": 19,
+    "penalizacion_uyu": 700.0
+  },
+  {
+    "viaje_id": 18,
+    "pasajeros": 5,
+    "asignado_original": "v_18_3",
+    "asignado_fallback_15s": "v_18_0",
+    "demora_calc_min": 6,
+    "penalizacion_uyu": 50.0
+  },
+  {
+    "viaje_id": 19,
+    "pasajeros": 3,
+    "asignado_original": "v_19_3",
+    "asignado_fallback_15s": "v_19_1",
+    "demora_calc_min": 25,
+    "penalizacion_uyu": 1000.0
+  },
+  {
+    "viaje_id": 20,
+    "pasajeros": 3,
+    "asignado_original": "v_20_3",
+    "asignado_fallback_15s": "v_20_4",
+    "demora_calc_min": 25,
+    "penalizacion_uyu": 1000.0
+  },
+  {
+    "viaje_id": 21,
+    "pasajeros": 6,
+    "asignado_original": "v_21_3",
+    "asignado_fallback_15s": "v_21_0",
+    "demora_calc_min": 13,
+    "penalizacion_uyu": 400.0
+  },
+  {
+    "viaje_id": 22,
+    "pasajeros": 3,
+    "asignado_original": "v_22_2",
+    "asignado_fallback_15s": "v_22_0",
+    "demora_calc_min": 16,
+    "penalizacion_uyu": 550.0
+  },
+  {
+    "viaje_id": 23,
+    "pasajeros": 6,
+    "asignado_original": "v_23_1",
+    "asignado_fallback_15s": "v_23_2",
+    "demora_calc_min": 2,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 24,
+    "pasajeros": 2,
+    "asignado_original": "v_24_0",
+    "asignado_fallback_15s": "v_24_2",
+    "demora_calc_min": 23,
+    "penalizacion_uyu": 900.0
+  },
+  {
+    "viaje_id": 25,
+    "pasajeros": 5,
+    "asignado_original": "v_25_3",
+    "asignado_fallback_15s": "v_25_1",
+    "demora_calc_min": 5,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 26,
+    "pasajeros": 5,
+    "asignado_original": "v_26_0",
+    "asignado_fallback_15s": "v_26_1",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 27,
+    "pasajeros": 5,
+    "asignado_original": "v_27_4",
+    "asignado_fallback_15s": "v_27_0",
+    "demora_calc_min": 24,
+    "penalizacion_uyu": 950.0
+  },
+  {
+    "viaje_id": 28,
+    "pasajeros": 2,
+    "asignado_original": "v_28_1",
+    "asignado_fallback_15s": "v_28_2",
+    "demora_calc_min": 19,
+    "penalizacion_uyu": 700.0
+  },
+  {
+    "viaje_id": 29,
+    "pasajeros": 4,
+    "asignado_original": "v_29_3",
+    "asignado_fallback_15s": "v_29_2",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 30,
+    "pasajeros": 5,
+    "asignado_original": "v_30_3",
+    "asignado_fallback_15s": "v_30_1",
+    "demora_calc_min": 14,
+    "penalizacion_uyu": 450.0
+  },
+  {
+    "viaje_id": 31,
+    "pasajeros": 1,
+    "asignado_original": "v_31_4",
+    "asignado_fallback_15s": "v_31_2",
+    "demora_calc_min": 18,
+    "penalizacion_uyu": 650.0
+  },
+  {
+    "viaje_id": 32,
+    "pasajeros": 5,
+    "asignado_original": "v_32_2",
+    "asignado_fallback_15s": "v_32_4",
+    "demora_calc_min": 22,
+    "penalizacion_uyu": 850.0
+  },
+  {
+    "viaje_id": 33,
+    "pasajeros": 3,
+    "asignado_original": "v_33_4",
+    "asignado_fallback_15s": "v_33_0",
+    "demora_calc_min": 17,
+    "penalizacion_uyu": 600.0
+  },
+  {
+    "viaje_id": 34,
+    "pasajeros": 4,
+    "asignado_original": "v_34_0",
+    "asignado_fallback_15s": "v_34_2",
+    "demora_calc_min": 17,
+    "penalizacion_uyu": 600.0
+  },
+  {
+    "viaje_id": 35,
+    "pasajeros": 4,
+    "asignado_original": "v_35_1",
+    "asignado_fallback_15s": "v_35_0",
+    "demora_calc_min": 2,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 36,
+    "pasajeros": 3,
+    "asignado_original": "v_36_2",
+    "asignado_fallback_15s": "v_36_1",
+    "demora_calc_min": 25,
+    "penalizacion_uyu": 1000.0
+  },
+  {
+    "viaje_id": 37,
+    "pasajeros": 1,
+    "asignado_original": "v_37_3",
+    "asignado_fallback_15s": "v_37_0",
+    "demora_calc_min": 19,
+    "penalizacion_uyu": 700.0
+  },
+  {
+    "viaje_id": 38,
+    "pasajeros": 5,
+    "asignado_original": "v_38_4",
+    "asignado_fallback_15s": "v_38_3",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 39,
+    "pasajeros": 1,
+    "asignado_original": "v_39_1",
+    "asignado_fallback_15s": "v_39_0",
+    "demora_calc_min": 2,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 40,
+    "pasajeros": 6,
+    "asignado_original": "v_40_0",
+    "asignado_fallback_15s": "v_40_2",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 41,
+    "pasajeros": 4,
+    "asignado_original": "v_41_0",
+    "asignado_fallback_15s": "v_41_1",
+    "demora_calc_min": 21,
+    "penalizacion_uyu": 800.0
+  },
+  {
+    "viaje_id": 42,
+    "pasajeros": 4,
+    "asignado_original": "v_42_1",
+    "asignado_fallback_15s": "v_42_4",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 43,
+    "pasajeros": 4,
+    "asignado_original": "v_43_2",
+    "asignado_fallback_15s": "v_43_4",
+    "demora_calc_min": 15,
+    "penalizacion_uyu": 500.0
+  },
+  {
+    "viaje_id": 44,
+    "pasajeros": 5,
+    "asignado_original": "v_44_2",
+    "asignado_fallback_15s": "v_44_1",
+    "demora_calc_min": 2,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 45,
+    "pasajeros": 4,
+    "asignado_original": "v_45_2",
+    "asignado_fallback_15s": "v_45_1",
+    "demora_calc_min": 10,
+    "penalizacion_uyu": 250.0
+  },
+  {
+    "viaje_id": 46,
+    "pasajeros": 3,
+    "asignado_original": "v_46_2",
+    "asignado_fallback_15s": "v_46_0",
+    "demora_calc_min": 20,
+    "penalizacion_uyu": 750.0
+  },
+  {
+    "viaje_id": 47,
+    "pasajeros": 6,
+    "asignado_original": "v_47_1",
+    "asignado_fallback_15s": "v_47_0",
+    "demora_calc_min": 22,
+    "penalizacion_uyu": 850.0
+  },
+  {
+    "viaje_id": 48,
+    "pasajeros": 6,
+    "asignado_original": "v_48_3",
+    "asignado_fallback_15s": "v_48_4",
+    "demora_calc_min": 20,
+    "penalizacion_uyu": 750.0
+  },
+  {
+    "viaje_id": 49,
+    "pasajeros": 1,
+    "asignado_original": "v_49_2",
+    "asignado_fallback_15s": "v_49_1",
+    "demora_calc_min": 3,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 50,
+    "pasajeros": 4,
+    "asignado_original": "v_50_0",
+    "asignado_fallback_15s": "v_50_1",
+    "demora_calc_min": 6,
+    "penalizacion_uyu": 50.0
+  },
+  {
+    "viaje_id": 51,
+    "pasajeros": 5,
+    "asignado_original": "v_51_2",
+    "asignado_fallback_15s": "v_51_4",
+    "demora_calc_min": 15,
+    "penalizacion_uyu": 500.0
+  },
+  {
+    "viaje_id": 52,
+    "pasajeros": 1,
+    "asignado_original": "v_52_2",
+    "asignado_fallback_15s": "v_52_1",
+    "demora_calc_min": 25,
+    "penalizacion_uyu": 1000.0
+  },
+  {
+    "viaje_id": 53,
+    "pasajeros": 3,
+    "asignado_original": "v_53_2",
+    "asignado_fallback_15s": "v_53_0",
+    "demora_calc_min": 21,
+    "penalizacion_uyu": 800.0
+  },
+  {
+    "viaje_id": 54,
+    "pasajeros": 6,
+    "asignado_original": "v_54_3",
+    "asignado_fallback_15s": "v_54_4",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 55,
+    "pasajeros": 1,
+    "asignado_original": "v_55_4",
+    "asignado_fallback_15s": "v_55_1",
+    "demora_calc_min": 25,
+    "penalizacion_uyu": 1000.0
+  },
+  {
+    "viaje_id": 56,
+    "pasajeros": 2,
+    "asignado_original": "v_56_2",
+    "asignado_fallback_15s": "v_56_3",
+    "demora_calc_min": 1,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 57,
+    "pasajeros": 1,
+    "asignado_original": "v_57_1",
+    "asignado_fallback_15s": "v_57_0",
+    "demora_calc_min": 20,
+    "penalizacion_uyu": 750.0
+  },
+  {
+    "viaje_id": 58,
+    "pasajeros": 2,
+    "asignado_original": "v_58_3",
+    "asignado_fallback_15s": "v_58_0",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 59,
+    "pasajeros": 6,
+    "asignado_original": "v_59_3",
+    "asignado_fallback_15s": "v_59_0",
+    "demora_calc_min": 15,
+    "penalizacion_uyu": 500.0
+  },
+  {
+    "viaje_id": 60,
+    "pasajeros": 5,
+    "asignado_original": "v_60_3",
+    "asignado_fallback_15s": "v_60_4",
+    "demora_calc_min": 8,
+    "penalizacion_uyu": 150.0
+  },
+  {
+    "viaje_id": 61,
+    "pasajeros": 6,
+    "asignado_original": "v_61_2",
+    "asignado_fallback_15s": "v_61_4",
+    "demora_calc_min": 13,
+    "penalizacion_uyu": 400.0
+  },
+  {
+    "viaje_id": 62,
+    "pasajeros": 5,
+    "asignado_original": "v_62_3",
+    "asignado_fallback_15s": "v_62_0",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 63,
+    "pasajeros": 3,
+    "asignado_original": "v_63_1",
+    "asignado_fallback_15s": "v_63_2",
+    "demora_calc_min": 15,
+    "penalizacion_uyu": 500.0
+  },
+  {
+    "viaje_id": 64,
+    "pasajeros": 1,
+    "asignado_original": "v_64_3",
+    "asignado_fallback_15s": "v_64_1",
+    "demora_calc_min": 16,
+    "penalizacion_uyu": 550.0
+  },
+  {
+    "viaje_id": 65,
+    "pasajeros": 4,
+    "asignado_original": "v_65_4",
+    "asignado_fallback_15s": "v_65_3",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 66,
+    "pasajeros": 2,
+    "asignado_original": "v_66_1",
+    "asignado_fallback_15s": "v_66_2",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 67,
+    "pasajeros": 4,
+    "asignado_original": "v_67_2",
+    "asignado_fallback_15s": "v_67_4",
+    "demora_calc_min": 22,
+    "penalizacion_uyu": 850.0
+  },
+  {
+    "viaje_id": 68,
+    "pasajeros": 1,
+    "asignado_original": "v_68_2",
+    "asignado_fallback_15s": "v_68_0",
+    "demora_calc_min": 25,
+    "penalizacion_uyu": 1000.0
+  },
+  {
+    "viaje_id": 69,
+    "pasajeros": 6,
+    "asignado_original": "v_69_0",
+    "asignado_fallback_15s": "v_69_4",
+    "demora_calc_min": 22,
+    "penalizacion_uyu": 850.0
+  },
+  {
+    "viaje_id": 70,
+    "pasajeros": 6,
+    "asignado_original": "v_70_0",
+    "asignado_fallback_15s": "v_70_2",
+    "demora_calc_min": 15,
+    "penalizacion_uyu": 500.0
+  },
+  {
+    "viaje_id": 71,
+    "pasajeros": 1,
+    "asignado_original": "v_71_3",
+    "asignado_fallback_15s": "v_71_2",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 72,
+    "pasajeros": 1,
+    "asignado_original": "v_72_3",
+    "asignado_fallback_15s": "v_72_1",
+    "demora_calc_min": 3,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 73,
+    "pasajeros": 6,
+    "asignado_original": "v_73_4",
+    "asignado_fallback_15s": "v_73_3",
+    "demora_calc_min": 15,
+    "penalizacion_uyu": 500.0
+  },
+  {
+    "viaje_id": 74,
+    "pasajeros": 6,
+    "asignado_original": "v_74_1",
+    "asignado_fallback_15s": "v_74_2",
+    "demora_calc_min": 23,
+    "penalizacion_uyu": 900.0
+  },
+  {
+    "viaje_id": 75,
+    "pasajeros": 5,
+    "asignado_original": "v_75_1",
+    "asignado_fallback_15s": "v_75_0",
+    "demora_calc_min": 2,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 76,
+    "pasajeros": 3,
+    "asignado_original": "v_76_4",
+    "asignado_fallback_15s": "v_76_1",
+    "demora_calc_min": 17,
+    "penalizacion_uyu": 600.0
+  },
+  {
+    "viaje_id": 77,
+    "pasajeros": 5,
+    "asignado_original": "v_77_3",
+    "asignado_fallback_15s": "v_77_0",
+    "demora_calc_min": 7,
+    "penalizacion_uyu": 100.0
+  },
+  {
+    "viaje_id": 78,
+    "pasajeros": 1,
+    "asignado_original": "v_78_1",
+    "asignado_fallback_15s": "v_78_4",
+    "demora_calc_min": 1,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 79,
+    "pasajeros": 2,
+    "asignado_original": "v_79_0",
+    "asignado_fallback_15s": "v_79_1",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 80,
+    "pasajeros": 5,
+    "asignado_original": "v_80_3",
+    "asignado_fallback_15s": "v_80_1",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 81,
+    "pasajeros": 3,
+    "asignado_original": "v_81_1",
+    "asignado_fallback_15s": "v_81_2",
+    "demora_calc_min": 19,
+    "penalizacion_uyu": 700.0
+  },
+  {
+    "viaje_id": 82,
+    "pasajeros": 4,
+    "asignado_original": "v_82_0",
+    "asignado_fallback_15s": "v_82_4",
+    "demora_calc_min": 20,
+    "penalizacion_uyu": 750.0
+  },
+  {
+    "viaje_id": 83,
+    "pasajeros": 3,
+    "asignado_original": "v_83_2",
+    "asignado_fallback_15s": "v_83_0",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 84,
+    "pasajeros": 1,
+    "asignado_original": "v_84_3",
+    "asignado_fallback_15s": "v_84_1",
+    "demora_calc_min": 16,
+    "penalizacion_uyu": 550.0
+  },
+  {
+    "viaje_id": 85,
+    "pasajeros": 2,
+    "asignado_original": "v_85_1",
+    "asignado_fallback_15s": "v_85_3",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 86,
+    "pasajeros": 5,
+    "asignado_original": "v_86_1",
+    "asignado_fallback_15s": "v_86_4",
+    "demora_calc_min": 17,
+    "penalizacion_uyu": 600.0
+  },
+  {
+    "viaje_id": 87,
+    "pasajeros": 4,
+    "asignado_original": "v_87_0",
+    "asignado_fallback_15s": "v_87_1",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 88,
+    "pasajeros": 2,
+    "asignado_original": "v_88_0",
+    "asignado_fallback_15s": "v_88_3",
+    "demora_calc_min": 21,
+    "penalizacion_uyu": 800.0
+  },
+  {
+    "viaje_id": 89,
+    "pasajeros": 5,
+    "asignado_original": "v_89_4",
+    "asignado_fallback_15s": "v_89_0",
+    "demora_calc_min": 4,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 90,
+    "pasajeros": 2,
+    "asignado_original": "v_90_1",
+    "asignado_fallback_15s": "v_90_0",
+    "demora_calc_min": 23,
+    "penalizacion_uyu": 900.0
+  },
+  {
+    "viaje_id": 91,
+    "pasajeros": 5,
+    "asignado_original": "v_91_0",
+    "asignado_fallback_15s": "v_91_1",
+    "demora_calc_min": 7,
+    "penalizacion_uyu": 100.0
+  },
+  {
+    "viaje_id": 92,
+    "pasajeros": 3,
+    "asignado_original": "v_92_0",
+    "asignado_fallback_15s": "v_92_2",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 93,
+    "pasajeros": 3,
+    "asignado_original": "v_93_1",
+    "asignado_fallback_15s": "v_93_4",
+    "demora_calc_min": 11,
+    "penalizacion_uyu": 300.0
+  },
+  {
+    "viaje_id": 94,
+    "pasajeros": 4,
+    "asignado_original": "v_94_4",
+    "asignado_fallback_15s": "v_94_0",
+    "demora_calc_min": 22,
+    "penalizacion_uyu": 850.0
+  },
+  {
+    "viaje_id": 95,
+    "pasajeros": 1,
+    "asignado_original": "v_95_1",
+    "asignado_fallback_15s": "v_95_3",
+    "demora_calc_min": 19,
+    "penalizacion_uyu": 700.0
+  },
+  {
+    "viaje_id": 96,
+    "pasajeros": 5,
+    "asignado_original": "v_96_0",
+    "asignado_fallback_15s": "v_96_3",
+    "demora_calc_min": 11,
+    "penalizacion_uyu": 300.0
+  },
+  {
+    "viaje_id": 97,
+    "pasajeros": 4,
+    "asignado_original": "v_97_0",
+    "asignado_fallback_15s": "v_97_3",
+    "demora_calc_min": 0,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 98,
+    "pasajeros": 4,
+    "asignado_original": "v_98_3",
+    "asignado_fallback_15s": "v_98_1",
+    "demora_calc_min": 5,
+    "penalizacion_uyu": 0.0
+  },
+  {
+    "viaje_id": 99,
+    "pasajeros": 4,
+    "asignado_original": "v_99_0",
+    "asignado_fallback_15s": "v_99_4",
+    "demora_calc_min": 12,
+    "penalizacion_uyu": 350.0
+  }
+]
