@@ -1,44 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Users, AlertTriangle, TrendingUp, Plus, X, Settings, Map as MapIcon, Truck, Briefcase } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import { AlertOctagon } from 'lucide-react';
-import Button from '../components/ui/Button';
-import { supabase } from '../lib/supabase';
-import { parseEWKB } from '../lib/utils';
-import { adminService } from '../services/adminService';
-import ChoferesPanel from './admin/ChoferesPanel';
-import ClientesPanel from './admin/ClientesPanel';
-import IncidentesPanel from './admin/IncidentesPanel';
-import AdminsPanel from './admin/AdminsPanel';
-import DireccionInput from '../components/ui/DireccionInput';
-import { Polygon } from 'react-leaflet';
+import Button from '../../components/ui/Button';
+import { supabase } from '../../lib/supabase';
+import { parseEWKB } from '../../lib/utils';
+import { adminService } from '../../services/adminService';
+import ChoferesPanel from './ChoferesPanel';
+import ClientesPanel from './ClientesPanel';
+import IncidentesPanel from './IncidentesPanel';
+import AdminsPanel from './AdminsPanel';
+import FleetMap from '../../components/admin/FleetMap';
+import IncidentTracker from '../../components/admin/IncidentTracker';
+import FinancialConsole from '../../components/admin/FinancialConsole';
+import ChecklistManager from '../../components/admin/ChecklistManager';
 
-// Utilidad nativa ligera para calcular los bordes de un hexágono H3 (res 8 ~700m)
-const getHexagonPolygon = (lat, lng, radiusMeters = 700) => {
-  const points = [];
-  for (let i = 0; i < 6; i++) {
-    const angle_deg = 60 * i - 30; // Rotación para hexágono con punta arriba
-    const angle_rad = Math.PI / 180 * angle_deg;
-    const dLat = (radiusMeters * Math.sin(angle_rad)) / 111320;
-    const dLng = (radiusMeters * Math.cos(angle_rad)) / (111320 * Math.cos(lat * (Math.PI / 180)));
-    points.push([lat + dLat, lng + dLng]);
-  }
-  return points;
-};
+import DireccionInput from '../../components/ui/DireccionInput';
 
-// Aproximación del vecindario k=1 de H3 (aprox 1500m a la redonda)
-const haversineDist = (lat1, lon1, lat2, lon2) => {
-  const R = 6371e3;
-  const p1 = lat1 * Math.PI/180;
-  const p2 = lat2 * Math.PI/180;
-  const dp = (lat2-lat1) * Math.PI/180;
-  const dl = (lon2-lon1) * Math.PI/180;
-  const a = Math.sin(dp/2) * Math.sin(dp/2) +
-            Math.cos(p1) * Math.cos(p2) *
-            Math.sin(dl/2) * Math.sin(dl/2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-  return R * c;
-};
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('radar');
   
@@ -424,72 +401,11 @@ const AdminDashboard = () => {
             </div>
 
             <h3 style={{ fontSize: '1rem', color: 'var(--accent-magenta)', marginTop: '24px' }}>Preguntas de Checklist</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {preguntasChecklist.map(p => (
-                <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px', backgroundColor: '#111', borderRadius: '4px', borderLeft: p.es_critica ? '3px solid #ff4444' : '3px solid #00ffcc' }}>
-                  <div>
-                    <span style={{ color: p.es_critica ? '#ff4444' : 'white', fontSize: '0.9rem' }}>{p.pregunta}</span>
-                    <span style={{ fontSize: '0.7rem', color: '#888', marginLeft: '8px' }}>[{p.categoria}]</span>
-                  </div>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem' }}>
-                    <input type="checkbox" checked={p.activa} onChange={async (e) => {
-                      await supabase.from('preguntas_checklist').update({ activa: e.target.checked }).eq('id', p.id);
-                      fetchInitialData();
-                    }} />
-                    Activa
-                  </label>
-                </div>
-              ))}
-            </div>
+            <ChecklistManager preguntasChecklist={preguntasChecklist} onFetchData={fetchInitialData} />
           </div>
         );
       case 'contabilidad':
-        return (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <h3 style={{ fontSize: '1.2rem', color: 'var(--accent-magenta)' }}>Diagnóstico y Salud Financiera</h3>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
-              <div style={{ backgroundColor: '#111', padding: '16px', borderRadius: '8px', borderLeft: '4px solid #00ffcc' }}>
-                <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '8px' }}>Ingresos Totales</p>
-                <h4 style={{ color: 'white', fontSize: '1.5rem' }}>$ {finanzas.ingreso.toFixed(2)}</h4>
-              </div>
-              <div style={{ backgroundColor: '#111', padding: '16px', borderRadius: '8px', borderLeft: '4px solid #ffaa00' }}>
-                <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '8px' }}>Costos Operativos Totales</p>
-                <h4 style={{ color: 'white', fontSize: '1.5rem' }}>$ {finanzas.costo.toFixed(2)}</h4>
-              </div>
-              <div style={{ backgroundColor: '#111', padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${finanzas.margen >= 0 ? '#00cc66' : '#ff4444'}` }}>
-                <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '8px' }}>Margen Neto</p>
-                <h4 style={{ color: finanzas.margen >= 0 ? '#00cc66' : '#ff4444', fontSize: '1.5rem' }}>$ {finanzas.margen.toFixed(2)}</h4>
-              </div>
-              <div style={{ backgroundColor: '#111', padding: '16px', borderRadius: '8px', borderLeft: '4px solid #0088ff' }}>
-                <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '8px' }}>Costo Promedio x Km</p>
-                <h4 style={{ color: 'white', fontSize: '1.5rem' }}>$ {(finanzas.km > 0 ? (finanzas.costo / finanzas.km) : 0).toFixed(2)}</h4>
-              </div>
-            </div>
-
-            <h3 style={{ fontSize: '1rem', color: 'var(--accent-magenta)' }}>Sugerencias de Optimización Contable</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {sugerencias.length === 0 ? <p style={{ fontSize: '0.8rem', color: '#aaa' }}>No hay sugerencias financieras en este momento.</p> : sugerencias.map(s => (
-                <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', backgroundColor: '#1a1a2e', borderRadius: '8px', border: '1px solid #333' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
-                    <span style={{ color: 'white', fontSize: '0.95rem' }}>{s.descripcion}</span>
-                    <span style={{ fontSize: '0.75rem', color: '#888', marginTop: '4px' }}>Zona: {s.zona_h3 || 'General'} | Vagoneta: {s.vagoneta_id || 'N/A'}</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button onClick={async () => {
-                      await supabase.from('sugerencias_financieras').update({ aplicada: true }).eq('id', s.id);
-                      fetchInitialData();
-                    }} style={{ background: '#00ffcc', color: 'black', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Aplicar</button>
-                    <button onClick={async () => {
-                      await supabase.from('sugerencias_financieras').update({ aplicada: true }).eq('id', s.id);
-                      fetchInitialData();
-                    }} style={{ background: '#333', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Ignorar</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
+        return <FinancialConsole finanzas={finanzas} sugerencias={sugerencias} onFetchData={fetchInitialData} />;
       default:
         return null;
     }
@@ -550,130 +466,12 @@ const AdminDashboard = () => {
           {renderSidebarContent()}
 
           {/* SOS ACTIVOS */}
-          {Object.keys(alertas).length > 0 && (
-            <div style={{ marginTop: '24px', backgroundColor: 'rgba(255,0,0,0.1)', padding: '16px', borderRadius: '12px', border: '1px solid #ff4444' }}>
-              <h3 style={{ color: '#ff4444', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}><AlertTriangle size={20} /> ¡ALERTA SOS ACTIVA!</h3>
-              {Object.values(alertas).map(alerta => (
-                <div key={alerta.id} style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,0,0,0.2)' }}>
-                  <p style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Emisor: {alerta.tipo_emisor.toUpperCase()}</p>
-                  <p style={{ fontSize: '0.8rem', color: '#ffaaaa' }}>Viaje: #{alerta.viaje_id?.substring(0,8)}</p>
-                  <button onClick={() => handleResolverAlerta(alerta.id)} style={{ backgroundColor: '#ff4444', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', width: '100%', marginTop: '8px' }}>Marcar Resuelta</button>
-                </div>
-              ))}
-            </div>
-          )}
+          <IncidentTracker alertas={alertas} onResolverAlerta={handleResolverAlerta} />
         </div>
       </div>
 
       {/* MAPA - Siempre renderizado de fondo para no romper Leaflet */}
-      <div style={{ 
-        flex: activeTab === 'radar' ? 1 : 'none', 
-        position: activeTab === 'radar' ? 'relative' : 'absolute',
-        width: activeTab === 'radar' ? 'auto' : '100%',
-        height: '100%',
-        opacity: activeTab === 'radar' ? 1 : 0,
-        pointerEvents: activeTab === 'radar' ? 'auto' : 'none',
-        zIndex: activeTab === 'radar' ? 0 : -1
-      }}>
-        <MapContainer center={[-34.9011, -56.1645]} zoom={13} style={{ width: '100%', height: '100%', backgroundColor: '#111318', zIndex: 0 }}>
-          <TileLayer attribution='&copy; CARTO' url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
-          
-          {/* Posiciones de Choferes Activos (en faena o traslado) */}
-          {Object.entries(choferesPos).map(([id, pos]) => {
-            if (pos.estado === 'en_faena' || pos.estado === 'en_traslado') {
-              return (
-                <Marker key={id} position={[pos.lat, pos.lng]}>
-                  <Popup>{pos.nombre || id.substring(0, 8)} - {pos.estado}</Popup>
-                </Marker>
-              );
-            }
-            // Si el admin está en Radar, capaz quiere ver todos los disponibles también
-            if (activeTab === 'radar') {
-               return (
-                <Marker key={id} position={[pos.lat, pos.lng]}>
-                  <Popup>{pos.nombre || id.substring(0, 8)} - {pos.estado}</Popup>
-                </Marker>
-              );
-            }
-            return null;
-          })}
-
-          {/* Faenas (Origen y Destino) */}
-          {faenas.filter(f => !['finalizada', 'cancelada_cliente', 'cancelada_gebo'].includes(f.estado)).map(f => {
-            let ocoords = null, dcoords = null;
-            if (typeof f.origen === 'string') ocoords = parseEWKB(f.origen);
-            else if (f.origen?.type === 'Point') ocoords = [f.origen.coordinates[1], f.origen.coordinates[0]];
-            
-            if (typeof f.destino === 'string') dcoords = parseEWKB(f.destino);
-            else if (f.destino?.type === 'Point') dcoords = [f.destino.coordinates[1], f.destino.coordinates[0]];
-
-            const olat = ocoords?.[0], olng = ocoords?.[1];
-            const dlat = dcoords?.[0], dlng = dcoords?.[1];
-
-            if (olat && dlat) {
-              return (
-                <React.Fragment key={`faena-${f.id}`}>
-                  <Marker position={[olat, olng]}><Popup>Origen Faena {f.id.substring(0,5)}</Popup></Marker>
-                  <Marker position={[dlat, dlng]}><Popup>Destino Faena {f.id.substring(0,5)}</Popup></Marker>
-                  <Polyline positions={[[olat, olng], [dlat, dlng]]} color="#ea6093" dashArray="5, 10" />
-                </React.Fragment>
-              );
-            }
-            return null;
-          })}
-          {/* Capa Dinámica de Hexágonos de Escasez H3 */}
-          {faenas.filter(f => ['programada', 'ofrecida'].includes(f.estado)).map(f => {
-            let ocoords = null;
-            if (typeof f.origen === 'string') ocoords = parseEWKB(f.origen);
-            else if (f.origen?.type === 'Point') ocoords = [f.origen.coordinates[1], f.origen.coordinates[0]];
-            
-            if (ocoords) {
-              const [olat, olng] = ocoords;
-              
-              // Lógica Adaptador k=1 (Búsqueda en anillo H3 aproximado a 1500m)
-              let isHotZone = true;
-              Object.values(choferesPos).forEach(pos => {
-                if (pos.estado === 'disponible') {
-                  const dist = haversineDist(olat, olng, pos.lat, pos.lng);
-                  if (dist <= 1500) {
-                    isHotZone = false;
-                  }
-                }
-              });
-
-              if (isHotZone) {
-                const hexPolygon = getHexagonPolygon(olat, olng, 700); // 700m radio = Res 8
-                return (
-                  <Polygon 
-                    key={`h3-escasez-${f.id}`}
-                    positions={hexPolygon} 
-                    pathOptions={{ 
-                      fillColor: '#ff4444', 
-                      fillOpacity: 0.35, 
-                      color: '#ff4444', 
-                      weight: 1, 
-                      dashArray: '3, 6' 
-                    }}
-                  >
-                    <Popup>
-                      Zona de Escasez<br/>
-                      H3: <strong>{f.origen_h3_res8 || 'Autocalculando...'}</strong><br/>
-                      Sin flota disponible en anillo k=1
-                    </Popup>
-                  </Polygon>
-                );
-              }
-            }
-            return null;
-          })}
-        </MapContainer>
-        <div style={{ position: 'absolute', top: '24px', right: '24px', zIndex: 1000 }}>
-          <div style={{ backgroundColor: 'rgba(26, 29, 36, 0.9)', backdropFilter: 'blur(10px)', padding: '12px 20px', borderRadius: '24px', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#00ffcc', boxShadow: '0 0 10px #00ffcc' }} />
-            <span style={{ fontSize: '0.85rem', fontWeight: '600' }}>WSS Conectado</span>
-          </div>
-        </div>
-      </div>
+      <FleetMap activeTab={activeTab} choferesPos={choferesPos} faenas={faenas} />
 
       {/* MODAL CREAR TRASLADO */}
       {isTrasladoModalOpen && (
