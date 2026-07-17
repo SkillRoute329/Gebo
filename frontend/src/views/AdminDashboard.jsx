@@ -97,29 +97,33 @@ const AdminDashboard = () => {
       }).subscribe();
 
     const channelPosiciones = supabase.channel('admin-posiciones')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'posiciones' }, (payload) => {
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'vagonetas_estado_actual' }, async (payload) => {
         const p = payload.new;
         if (p) {
+          // Buscamos el chofer_vagoneta_id de la base para mapear al radar
+          const { data: vag } = await supabase.from('vagonetas').select('chofer_vagoneta_id').eq('id', p.vagoneta_id).single();
+          const choferId = vag?.chofer_vagoneta_id;
+          if (!choferId) return;
+
           let coords = null;
-          if (typeof p.ubicacion === 'string') coords = parseEWKB(p.ubicacion);
-          else if (p.ubicacion && p.ubicacion.type === 'Point') coords = [p.ubicacion.coordinates[1], p.ubicacion.coordinates[0]];
+          if (typeof p.ultima_posicion === 'string') coords = parseEWKB(p.ultima_posicion);
+          else if (p.ultima_posicion && p.ultima_posicion.type === 'Point') coords = [p.ultima_posicion.coordinates[1], p.ultima_posicion.coordinates[0]];
           
           if (coords) {
             setChoferesPos(prev => {
-              const existing = prev[p.chofer_id] || {};
-              // Si no teniamos el estado, lo buscamos en choferes (closure de useState podria estar desactualizado, pero es mejor que nada)
-              let estado = existing.estado;
+              const existing = prev[choferId] || {};
+              let estado = existing.estado || p.estado;
               let nombre = existing.nombre;
-              if (!estado) {
+              if (!nombre) {
                  setChoferes(chofs => {
-                   const c = chofs.find(x => x.id === p.chofer_id);
-                   if (c) { estado = c.estado; nombre = c.nombre; }
+                   const c = chofs.find(x => x.id === choferId);
+                   if (c) { nombre = c.nombre; }
                    return chofs;
                  });
               }
               return {
                 ...prev,
-                [p.chofer_id]: { ...existing, lat: coords[0], lng: coords[1], estado, nombre }
+                [choferId]: { ...existing, lat: coords[0], lng: coords[1], estado, nombre }
               };
             });
           }
@@ -153,15 +157,17 @@ const AdminDashboard = () => {
       const count = await adminService.getChoferesActivosCount();
       setChoferesActivosRadar(count);
 
-      const posData = await supabase.from('posiciones').select('*');
+      const posData = await supabase.from('vagonetas_estado_actual').select('*, vagonetas(chofer_vagoneta_id)');
       const cPos = {};
       posData.data?.forEach(p => {
-        const chof = chofs.find(c => c.id === p.chofer_id);
+        const choferId = p.vagonetas?.chofer_vagoneta_id;
+        if (!choferId) return;
+        const chof = chofs.find(c => c.id === choferId);
         let coords = null;
-        if (typeof p.ubicacion === 'string') coords = parseEWKB(p.ubicacion);
-        else if (p.ubicacion && p.ubicacion.type === 'Point') coords = [p.ubicacion.coordinates[1], p.ubicacion.coordinates[0]];
+        if (typeof p.ultima_posicion === 'string') coords = parseEWKB(p.ultima_posicion);
+        else if (p.ultima_posicion && p.ultima_posicion.type === 'Point') coords = [p.ultima_posicion.coordinates[1], p.ultima_posicion.coordinates[0]];
         if (coords) {
-          cPos[p.chofer_id] = { lat: coords[0], lng: coords[1], estado: chof?.estado, nombre: chof?.nombre };
+          cPos[choferId] = { lat: coords[0], lng: coords[1], estado: p.estado || chof?.estado, nombre: chof?.nombre };
         }
       });
       setChoferesPos(cPos);
@@ -316,6 +322,9 @@ const AdminDashboard = () => {
                 <label style={{ fontSize: '0.8rem', color: '#aaa' }}>Costo cancelación tardía</label>
                 <input type="number" value={configuracion.costo_cancelacion_tardia} onChange={e => setConfiguracion({...configuracion, costo_cancelacion_tardia: e.target.value})} style={{ background: 'black', color: 'white', padding: '8px', border: '1px solid #333' }} />
                 
+                <label style={{ fontSize: '0.8rem', color: '#aaa' }}>Tolerancia Espera (Desacople en min)</label>
+                <input type="number" value={configuracion.tolerancia_espera_minutos || 8} onChange={e => setConfiguracion({...configuracion, tolerancia_espera_minutos: e.target.value})} style={{ background: 'black', color: 'white', padding: '8px', border: '1px solid #333' }} />
+
                 <Button onClick={() => adminService.updateConfiguracion(configuracion.id, configuracion).then(() => alert("Guardado"))}>Guardar Cambios</Button>
               </div>
             )}
