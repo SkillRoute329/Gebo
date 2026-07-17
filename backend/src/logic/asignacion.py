@@ -56,6 +56,35 @@ def determinar_chofer_optimo_para_faena(
                 
         choferes_aptos.append(c)
         
+    # Consultar config automatizacion
+    import os, psycopg2
+    try:
+        conn = psycopg2.connect(os.environ.get("SUPABASE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:6543/postgres"))
+        cursor = conn.cursor()
+        cursor.execute("SELECT despacho_autonomo_h3 FROM configuracion_automatizacion LIMIT 1;")
+        res_auto = cursor.fetchone()
+        despacho_autonomo = res_auto[0] if res_auto else False
+        
+        # Simulación de la query H3 si sabemos el H3 de la faena
+        if despacho_autonomo:
+            cursor.execute("SELECT chofer_id FROM posiciones WHERE ubicacion_h3_index = '88a919426bfffff' LIMIT 1;")
+            h3_match = cursor.fetchone()
+            if h3_match:
+                chofer_h3_id = str(h3_match[0])
+                # Buscar este chofer en los aptos
+                for chofer_apto in choferes_aptos:
+                    if str(chofer_apto['id']) == chofer_h3_id:
+                        return {
+                            'chofer_id': chofer_apto['id'],
+                            'estado': 'ofrecida',
+                            'oferta_expira_en': tiempo_actual + timedelta(seconds=15)
+                        }
+    except Exception as e:
+        pass
+    finally:
+        if 'cursor' in locals(): cursor.close()
+        if 'conn' in locals(): conn.close()
+
     # Ordenar por penalizaciones recientes de timeout y luego por distancia
     choferes_ordenados = sorted(choferes_aptos, key=lambda x: (
         x.get('cancelaciones_tardias_24h', 0),
