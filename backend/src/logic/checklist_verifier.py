@@ -3,7 +3,7 @@ import psycopg2
 import json
 from typing import Dict, List
 
-DB_URL = os.environ.get("SUPABASE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:54322/postgres")
+DB_URL = os.environ.get("SUPABASE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:6543/postgres?prepared_statement_cache_size=0")
 
 def guardar_inspeccion(turno_id: str, tipo: str, odometro: int, respuestas: Dict, fotos: List[str], vagoneta_id: str, danos_reportados: List[str] = None) -> bool:
     """

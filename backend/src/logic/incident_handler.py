@@ -3,11 +3,14 @@ import psycopg2
 from typing import Dict
 import json
 
-DB_URL = os.environ.get("SUPABASE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:54322/postgres")
+print("[INFO] Cargando incident_handler.py con Nomenclatura Semántica Estricta.")
+print("[INFO] Equivalencias: 'chofer_id' (en faenas) -> 'gebo_driver_id'.")
+
+DB_URL = os.environ.get("SUPABASE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:6543/postgres?prepared_statement_cache_size=0")
 
 def verificar_checkins_choferes():
     """
-    Verifica si los choferes han hecho check-in a tiempo para sus faenas programadas.
+    Verifica si los choferes (gebo_drivers) han hecho check-in a tiempo para sus faenas programadas.
     Si no lo hicieron, los marca ausentes y reasigna la faena a un retén.
     """
     conn = psycopg2.connect(DB_URL)
@@ -34,9 +37,9 @@ def verificar_checkins_choferes():
         faenas_retrasadas = cursor.fetchall()
         
         reasignaciones = []
-        for faena_id, chofer_id in faenas_retrasadas:
+        for faena_id, gebo_driver_id in faenas_retrasadas:
             # C) Marcar chofer como ausente_preventivo
-            cursor.execute("UPDATE choferes SET estado = 'ausente_preventivo' WHERE id = %s;", (chofer_id,))
+            cursor.execute("UPDATE choferes SET estado = 'ausente_preventivo' WHERE id = %s;", (gebo_driver_id,))
             
             # Buscar retén activo
             cursor.execute("SELECT id FROM choferes WHERE estado = 'reten_activo' LIMIT 1;")
@@ -46,14 +49,14 @@ def verificar_checkins_choferes():
                 reten_id = reten[0]
                 # D) Reasignar faena al retén
                 cursor.execute("UPDATE faenas SET chofer_id = %s, estado = 'asignada' WHERE id = %s;", (reten_id, faena_id))
-                reasignaciones.append({"faena_id": faena_id, "chofer_original": chofer_id, "nuevo_chofer": reten_id})
+                reasignaciones.append({"faena_id": faena_id, "gebo_driver_original": gebo_driver_id, "nuevo_gebo_driver": reten_id})
                 
         return reasignaciones
     finally:
         cursor.close()
         conn.close()
 
-def procesar_boton_sos(chofer_id: str, ubicacion: Dict) -> Dict:
+def procesar_boton_sos(gebo_driver_id: str, ubicacion: Dict) -> Dict:
     """
     Registra una alerta de pánico de alta prioridad y activa el guardado de coordenadas
     en tiempo real (en la vida real se mandaría señal al dispositivo).
@@ -69,7 +72,7 @@ def procesar_boton_sos(chofer_id: str, ubicacion: Dict) -> Dict:
             INSERT INTO incidentes_calle (tipo_incidente, descripcion, coordenadas_reporte, chofer_id)
             VALUES ('sos_panico', 'Botón SOS activado por el chofer', ST_SetSRID(ST_MakePoint(%s, %s), 4326), %s)
             RETURNING id;
-        """, (lng, lat, chofer_id))
+        """, (lng, lat, gebo_driver_id))
         incidente_id = cursor.fetchone()[0]
         
         return {

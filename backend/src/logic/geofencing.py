@@ -3,7 +3,7 @@ from typing import List
 import psycopg2
 from .h3_adapter import obtener_hex_vecinos_anillo1
 
-DB_URL = os.environ.get("SUPABASE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:54322/postgres")
+DB_URL = os.environ.get("SUPABASE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:6543/postgres?prepared_statement_cache_size=0")
 
 def verificar_desvio_vagoneta(traslado_id: str, ubicacion_actual_h3: str, ruta_planificada_h3: List[str]) -> bool:
     """

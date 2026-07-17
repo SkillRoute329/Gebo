@@ -12,7 +12,7 @@ class Ping(BaseModel):
     lng: float
     timestamp: str  # Fecha ISO-8601 guardada en el dispositivo
 
-DB_URL = os.environ.get("SUPABASE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:54322/postgres")
+DB_URL = os.environ.get("SUPABASE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:6543/postgres?prepared_statement_cache_size=0")
 
 def get_db_connection():
     return psycopg2.connect(DB_URL)

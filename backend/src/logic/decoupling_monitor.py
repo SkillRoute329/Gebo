@@ -2,15 +2,18 @@ import os
 import psycopg2
 from typing import List
 
-DB_URL = os.environ.get("SUPABASE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:54322/postgres")
+print("[INFO] Cargando decoupling_monitor.py con Nomenclatura Semántica Estricta.")
+print("[INFO] Equivalencias: 'traslado_id' -> 'shuttle_route_id', 'chofer_id' (faena) -> 'gebo_driver_id'.")
+
+DB_URL = os.environ.get("SUPABASE_DB_URL", "postgresql://postgres:postgres@127.0.0.1:6543/postgres?prepared_statement_cache_size=0")
 
 def evaluar_y_desacoplar_traslados_retrasados() -> List[str]:
     """
     Evalúa paradas en espera, lee la configuración de tolerancia,
-    desacopla choferes retrasados e invoca la re-secuenciación SQL.
-    Retorna lista de traslado_ids afectados.
+    desacopla choferes (gebo_driver) retrasados e invoca la re-secuenciación SQL.
+    Retorna lista de shuttle_route_id afectados.
     """
-    traslados_afectados = set()
+    affected_shuttle_routes = set()
     conn = psycopg2.connect(DB_URL)
     conn.autocommit = False
     cursor = conn.cursor()
@@ -22,10 +25,6 @@ def evaluar_y_desacoplar_traslados_retrasados() -> List[str]:
         tolerancia_minutos = row[0] if row else 8
         
         # 2. Buscar paradas retrasadas
-        # Como faenas puede no tener una fecha clara de cuando el chofer llegó al origen para empezar
-        # a esperar, para este escenario asumiremos que la demora se calcula desde fecha_hora_programada
-        # Si EXTRACT(EPOCH FROM (NOW() - f.fecha_hora_programada))/60 > tolerancia_minutos
-        
         cursor.execute("""
             SELECT p.id, p.traslado_id 
             FROM paradas_traslado p
@@ -37,15 +36,12 @@ def evaluar_y_desacoplar_traslados_retrasados() -> List[str]:
         
         retrasos = cursor.fetchall()
         
-        for parada_id, traslado_id in retrasos:
-            # 3. Invocar fn_desacoplar_chofer_retrasado
-            cursor.execute("SELECT fn_desacoplar_chofer_retrasado(%s);", (parada_id,))
-            traslados_afectados.add(traslado_id)
+        for stop_id, shuttle_route_id in retrasos:
+            # 3. Invocar fn_desacoplar_chofer_retrasado (ahora usa semántica stop_id internamente)
+            cursor.execute("SELECT fn_desacoplar_chofer_retrasado(%s);", (stop_id,))
+            affected_shuttle_routes.add(shuttle_route_id)
             
         conn.commit()
-        
-        # En una arquitectura completa, aquí se invocaría a routing_engine.py 
-        # para re-calcular los tiempos de viaje (ETAs) de las secuencias restantes.
         
     except Exception as e:
         conn.rollback()
@@ -54,4 +50,4 @@ def evaluar_y_desacoplar_traslados_retrasados() -> List[str]:
         cursor.close()
         conn.close()
         
-    return list(traslados_afectados)
+    return list(affected_shuttle_routes)
