@@ -141,11 +141,28 @@ const AdminDashboard = () => {
         }
       }).subscribe();
 
+    const channelIncidentes = supabase.channel('admin-incidentes')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'incidentes_calle' }, (payload) => {
+        const inc = payload.new;
+        if (inc.tipo_incidente === 'sos_panico' || inc.tipo_incidente === 'siniestro_vagoneta') {
+          const alertaObj = {
+            id: inc.id,
+            tipo_emisor: inc.tipo_incidente === 'sos_panico' ? 'chofer (SOS)' : 'vagoneta (SINIESTRO)',
+            viaje_id: inc.vagoneta_id || inc.chofer_id,
+            estado: 'activa',
+            is_incidente_calle: true
+          };
+          setAlertas(prev => ({ ...prev, [inc.id]: alertaObj }));
+          new Audio('https://assets.mixkit.co/active_storage/sfx/988/988-preview.mp3').play().catch(()=>{});
+        }
+      }).subscribe();
+
     return () => {
       supabase.removeChannel(channelFaenas);
       supabase.removeChannel(channelChoferesRadar);
       supabase.removeChannel(channelPosiciones);
       supabase.removeChannel(channelSOS);
+      supabase.removeChannel(channelIncidentes);
     };
   }, []);
 
@@ -190,7 +207,12 @@ const AdminDashboard = () => {
   };
 
   const handleResolverAlerta = async (alertaId) => {
-    await supabase.from('alertas_emergencia').update({ estado: 'resuelta' }).eq('id', alertaId);
+    const alerta = alertas[alertaId];
+    if (alerta?.is_incidente_calle) {
+        setAlertas(prev => { const n = {...prev}; delete n[alertaId]; return n; });
+    } else {
+        await supabase.from('alertas_emergencia').update({ estado: 'resuelta' }).eq('id', alertaId);
+    }
   };
 
   const renderSidebarContent = () => {
@@ -324,6 +346,9 @@ const AdminDashboard = () => {
                 
                 <label style={{ fontSize: '0.8rem', color: '#aaa' }}>Tolerancia Espera (Desacople en min)</label>
                 <input type="number" value={configuracion.tolerancia_espera_minutos || 8} onChange={e => setConfiguracion({...configuracion, tolerancia_espera_minutos: e.target.value})} style={{ background: 'black', color: 'white', padding: '8px', border: '1px solid #333' }} />
+
+                <label style={{ fontSize: '0.8rem', color: '#aaa' }}>Check-in Anticipado Obligatorio (min)</label>
+                <input type="number" value={configuracion.checkin_anticipado_minutos || 15} onChange={e => setConfiguracion({...configuracion, checkin_anticipado_minutos: e.target.value})} style={{ background: 'black', color: 'white', padding: '8px', border: '1px solid #333' }} />
 
                 <Button onClick={() => adminService.updateConfiguracion(configuracion.id, configuracion).then(() => alert("Guardado"))}>Guardar Cambios</Button>
               </div>
