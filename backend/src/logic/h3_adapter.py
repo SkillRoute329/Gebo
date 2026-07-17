@@ -20,8 +20,7 @@ def obtener_hex_resolucion_8(lat: float, lng: float) -> str:
     # Utilizamos el API moderno de h3-py v4.
     try:
         # API v4
-        cell = h3.latlng_to_cell(lat, lng, 8)
-        return h3.cell_to_string(cell)
+        return h3.latlng_to_cell(lat, lng, 8)
     except AttributeError:
         # Fallback API v3
         return h3.geo_to_h3(lat, lng, 8)
@@ -43,9 +42,8 @@ def obtener_hex_vecinos_anillo1(h3_index: str) -> List[str]:
     """
     try:
         # API v4
-        cell = h3.string_to_cell(h3_index)
-        neighbors = h3.grid_disk(cell, 1)
-        return [h3.cell_to_string(n) for n in neighbors]
+        neighbors = h3.grid_disk(h3_index, 1)
+        return list(neighbors)
     except AttributeError:
         # Fallback API v3
         neighbors = h3.k_ring(h3_index, 1)
