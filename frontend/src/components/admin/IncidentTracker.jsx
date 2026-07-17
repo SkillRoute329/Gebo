@@ -10,7 +10,7 @@ const IncidentTracker = ({ alertas, onResolverAlerta }) => {
       {Object.values(alertas).map(alerta => (
         <div key={alerta.id} style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid rgba(255,0,0,0.2)' }}>
           <p style={{ fontSize: '0.85rem', fontWeight: 'bold' }}>Emisor: {alerta.tipo_emisor.toUpperCase()}</p>
-          <p style={{ fontSize: '0.8rem', color: '#ffaaaa' }}>Viaje: #{alerta.viaje_id?.substring(0,8)}</p>
+          <p style={{ fontSize: '0.8rem', color: '#ffaaaa' }}>{alerta.tipo_emisor.includes('gebo_driver') ? 'Faena' : 'Shuttle Route'}: #{alerta.viaje_id?.substring(0,8)}</p>
           <button onClick={() => onResolverAlerta(alerta.id)} style={{ backgroundColor: '#ff4444', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem', width: '100%', marginTop: '8px' }}>Marcar Resuelta</button>
         </div>
       ))}

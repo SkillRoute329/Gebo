@@ -23,7 +23,7 @@ const AdminDashboard = () => {
   const [choferesActivosRadar, setChoferesActivosRadar] = useState(0);
   const [faenasEnCurso, setFaenasEnCurso] = useState(0);
   const [nuevosEventos, setNuevosEventos] = useState([]);
-  const [choferesPos, setChoferesPos] = useState({}); // { chofer_id: { lat, lng, estado, nombre } }
+  const [shuttleDriversPos, setShuttleDriversPos] = useState({}); // { shuttle_driver_id: { lat, lng, estado, nombre } }
   
   // Data lists
   const [choferes, setChoferes] = useState([]);
@@ -61,7 +61,7 @@ const AdminDashboard = () => {
         setChoferesActivosRadar(count);
 
         // Actualizar estado en el mapa (Radar)
-        setChoferesPos(prev => {
+        setShuttleDriversPos(prev => {
           if (!prev[payload.new.id]) return prev;
           return {
             ...prev,
@@ -83,28 +83,28 @@ const AdminDashboard = () => {
         if (p) {
           // Buscamos el chofer_vagoneta_id de la base para mapear al radar
           const { data: vag } = await supabase.from('vagonetas').select('chofer_vagoneta_id').eq('id', p.vagoneta_id).single();
-          const choferId = vag?.chofer_vagoneta_id;
-          if (!choferId) return;
+          const shuttle_driver_id = vag?.chofer_vagoneta_id;
+          if (!shuttle_driver_id) return;
 
           let coords = null;
           if (typeof p.ultima_posicion === 'string') coords = parseEWKB(p.ultima_posicion);
           else if (p.ultima_posicion && p.ultima_posicion.type === 'Point') coords = [p.ultima_posicion.coordinates[1], p.ultima_posicion.coordinates[0]];
           
           if (coords) {
-            setChoferesPos(prev => {
-              const existing = prev[choferId] || {};
+            setShuttleDriversPos(prev => {
+              const existing = prev[shuttle_driver_id] || {};
               let estado = existing.estado || p.estado;
               let nombre = existing.nombre;
               if (!nombre) {
                  setChoferes(chofs => {
-                   const c = chofs.find(x => x.id === choferId);
+                   const c = chofs.find(x => x.id === shuttle_driver_id);
                    if (c) { nombre = c.nombre; }
                    return chofs;
                  });
               }
               return {
                 ...prev,
-                [choferId]: { ...existing, lat: coords[0], lng: coords[1], estado, nombre }
+                [shuttle_driver_id]: { ...existing, lat: coords[0], lng: coords[1], estado, nombre }
               };
             });
           }
@@ -126,9 +126,10 @@ const AdminDashboard = () => {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'incidentes_calle' }, (payload) => {
         const inc = payload.new;
         if (inc.tipo_incidente === 'sos_panico' || inc.tipo_incidente === 'siniestro_vagoneta') {
+          // Mapeo semántico
           const alertaObj = {
             id: inc.id,
-            tipo_emisor: inc.tipo_incidente === 'sos_panico' ? 'chofer (SOS)' : 'vagoneta (SINIESTRO)',
+            tipo_emisor: inc.tipo_incidente === 'sos_panico' ? 'gebo_driver (SOS)' : 'shuttle_driver (SINIESTRO)',
             viaje_id: inc.vagoneta_id || inc.chofer_id,
             estado: 'activa',
             is_incidente_calle: true
@@ -170,17 +171,17 @@ const AdminDashboard = () => {
       const posData = await supabase.from('vagonetas_estado_actual').select('*, vagonetas(chofer_vagoneta_id)');
       const cPos = {};
       posData.data?.forEach(p => {
-        const choferId = p.vagonetas?.chofer_vagoneta_id;
-        if (!choferId) return;
-        const chof = chofs.find(c => c.id === choferId);
+        const shuttle_driver_id = p.vagonetas?.chofer_vagoneta_id;
+        if (!shuttle_driver_id) return;
+        const chof = chofs.find(c => c.id === shuttle_driver_id);
         let coords = null;
         if (typeof p.ultima_posicion === 'string') coords = parseEWKB(p.ultima_posicion);
         else if (p.ultima_posicion && p.ultima_posicion.type === 'Point') coords = [p.ultima_posicion.coordinates[1], p.ultima_posicion.coordinates[0]];
         if (coords) {
-          cPos[choferId] = { lat: coords[0], lng: coords[1], estado: p.estado || chof?.estado, nombre: chof?.nombre };
+          cPos[shuttle_driver_id] = { lat: coords[0], lng: coords[1], estado: p.estado || chof?.estado, nombre: chof?.nombre };
         }
       });
-      setChoferesPos(cPos);
+      setShuttleDriversPos(cPos);
 
       const fns = await adminService.getFaenasDelDia();
       setFaenas(fns);
@@ -279,14 +280,14 @@ const AdminDashboard = () => {
                 <p style={{ fontSize: '0.8rem', color: '#aaa' }}>Vehículo: {f.vehiculos_cliente?.marca || 'N/A'} {f.vehiculos_cliente?.modelo || ''}</p>
                 
                 <div style={{ marginTop: '8px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                  <label style={{ fontSize: '0.8rem', color: '#aaa' }}>Chofer Asignado:</label>
+                  <label style={{ fontSize: '0.8rem', color: '#aaa' }}>Gebo Driver (Chofer):</label>
                   <select 
-                    value={f.chofer_id || ''} 
-                    onChange={e => adminService.updateFaenaChofer(f.id, e.target.value).then(fetchInitialData)}
+                    value={f.gebo_driver_id || ''} 
+                    onChange={e => adminService.updateFaenaChofer(f.faena_id, e.target.value).then(fetchInitialData)}
                     style={{ background: 'black', color: 'white', border: '1px solid #333', padding: '4px', borderRadius: '4px' }}
                   >
                     <option value="">-- Sin Asignar --</option>
-                    {choferes.filter(c => c.estado === 'disponible' || c.id === f.chofer_id).map(c => (
+                    {choferes.filter(c => c.estado === 'disponible' || c.id === f.gebo_driver_id).map(c => (
                       <option key={c.id} value={c.id}>{c.nombre}</option>
                     ))}
                   </select>
@@ -294,7 +295,7 @@ const AdminDashboard = () => {
                   <label style={{ fontSize: '0.8rem', color: '#aaa', marginTop: '4px' }}>Estado Faena:</label>
                   <select 
                     value={f.estado} 
-                    onChange={e => adminService.updateFaenaEstado(f.id, e.target.value).then(fetchInitialData)}
+                    onChange={e => adminService.updateFaenaEstado(f.faena_id, e.target.value).then(fetchInitialData)}
                     style={{ background: 'black', color: 'white', border: '1px solid #333', padding: '4px', borderRadius: '4px', color: '#00ffcc' }}
                   >
                     <option value="programada">Programada</option>
@@ -310,7 +311,7 @@ const AdminDashboard = () => {
                 </div>
 
                 {['programada', 'ofrecida', 'asignada', 'en_curso'].includes(f.estado) && (
-                  <button onClick={() => adminService.cancelarFaena(f.id).then(fetchInitialData)} style={{ marginTop: '12px', padding: '4px 8px', background: '#ff4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '100%' }}>
+                  <button onClick={() => adminService.cancelarFaena(f.faena_id).then(fetchInitialData)} style={{ marginTop: '12px', padding: '4px 8px', background: '#ff4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', width: '100%' }}>
                     Forzar Cancelación (Admin)
                   </button>
                 )}
@@ -328,14 +329,14 @@ const AdminDashboard = () => {
               <div key={v.id} style={{ padding: '12px', backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <p style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>{v.patente} - {v.modelo} (Capacidad: {v.capacidad})</p>
                 <div>
-                  <label style={{ fontSize: '0.8rem', color: '#aaa', marginRight: '8px' }}>Chofer Asignado:</label>
+                  <label style={{ fontSize: '0.8rem', color: '#aaa', marginRight: '8px' }}>Shuttle Driver (Vagoneta):</label>
                   <select 
-                    value={v.chofer_vagoneta_id || ''} 
+                    value={v.shuttle_driver_id || ''} 
                     onChange={e => adminService.asignarChoferVagoneta(v.id, e.target.value).then(fetchInitialData)}
                     style={{ background: 'black', color: 'white', border: '1px solid #333', padding: '4px', borderRadius: '4px' }}
                   >
                     <option value="">-- Sin Asignar --</option>
-                    {choferes.filter(c => c.estado === 'disponible' || c.id === v.chofer_vagoneta_id).map(c => (
+                    {choferes.filter(c => c.estado === 'disponible' || c.id === v.shuttle_driver_id).map(c => (
                       <option key={c.id} value={c.id}>{c.nombre}</option>
                     ))}
                   </select>
@@ -471,7 +472,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* MAPA - Siempre renderizado de fondo para no romper Leaflet */}
-      <FleetMap activeTab={activeTab} choferesPos={choferesPos} faenas={faenas} />
+      <FleetMap activeTab={activeTab} shuttleDriversPos={shuttleDriversPos} faenas={faenas} />
 
       {/* MODAL CREAR TRASLADO */}
       {isTrasladoModalOpen && (
@@ -488,7 +489,7 @@ const AdminDashboard = () => {
               const lat = parseFloat(e.target.lat.value);
               const lng = parseFloat(e.target.lng.value);
               try {
-                await adminService.crearTraslado(vag, [{ chofer_id: chof, lat, lng, tipo: 'recogida' }]);
+                await adminService.crearTraslado(vag, [{ gebo_driver_id: chof, lat, lng, tipo: 'recogida' }]);
                 setIsTrasladoModalOpen(false);
                 alert("Traslado creado exitosamente");
               } catch (err) {

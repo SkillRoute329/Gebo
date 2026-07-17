@@ -8,11 +8,11 @@ const FinancialConsole = ({ finanzas, sugerencias, onFetchData }) => {
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
         <div style={{ backgroundColor: '#111', padding: '16px', borderRadius: '8px', borderLeft: '4px solid #00ffcc' }}>
-          <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '8px' }}>Ingresos Totales</p>
+          <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '8px' }}>Ingresos (Faenas)</p>
           <h4 style={{ color: 'white', fontSize: '1.5rem' }}>$ {finanzas.ingreso.toFixed(2)}</h4>
         </div>
         <div style={{ backgroundColor: '#111', padding: '16px', borderRadius: '8px', borderLeft: '4px solid #ffaa00' }}>
-          <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '8px' }}>Costos Operativos Totales</p>
+          <p style={{ color: '#aaa', fontSize: '0.9rem', marginBottom: '8px' }}>Costos (Shuttle Routes)</p>
           <h4 style={{ color: 'white', fontSize: '1.5rem' }}>$ {finanzas.costo.toFixed(2)}</h4>
         </div>
         <div style={{ backgroundColor: '#111', padding: '16px', borderRadius: '8px', borderLeft: `4px solid ${finanzas.margen >= 0 ? '#00cc66' : '#ff4444'}` }}>

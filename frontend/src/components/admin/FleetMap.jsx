@@ -29,7 +29,7 @@ const haversineDist = (lat1, lon1, lat2, lon2) => {
   return R * c;
 };
 
-const FleetMap = ({ activeTab, choferesPos, faenas }) => {
+const FleetMap = ({ activeTab, shuttleDriversPos, faenas }) => {
   return (
     <div style={{ 
       flex: activeTab === 'radar' ? 1 : 'none', 
@@ -44,7 +44,7 @@ const FleetMap = ({ activeTab, choferesPos, faenas }) => {
         <TileLayer attribution='&copy; CARTO' url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
         
         {/* Posiciones de Choferes Activos */}
-        {Object.entries(choferesPos).map(([id, pos]) => {
+        {Object.entries(shuttleDriversPos).map(([id, pos]) => {
           if (pos.estado === 'en_faena' || pos.estado === 'en_traslado') {
             return (
               <Marker key={id} position={[pos.lat, pos.lng]}>
@@ -95,7 +95,7 @@ const FleetMap = ({ activeTab, choferesPos, faenas }) => {
           if (ocoords) {
             const [olat, olng] = ocoords;
             let isHotZone = true;
-            Object.values(choferesPos).forEach(pos => {
+            Object.values(shuttleDriversPos).forEach(pos => {
               if (pos.estado === 'disponible') {
                 const dist = haversineDist(olat, olng, pos.lat, pos.lng);
                 if (dist <= 1500) {

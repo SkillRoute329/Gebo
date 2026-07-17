@@ -90,7 +90,11 @@ export const adminService = {
       .from('vagonetas')
       .select('*, choferes(nombre)');
     if (error) throw error;
-    return data;
+    // Traducción semántica (backend físico -> React lógico)
+    return data.map(v => ({
+      ...v,
+      shuttle_driver_id: v.chofer_vagoneta_id
+    }));
   },
 
   createVagoneta: async (data) => {
@@ -103,10 +107,11 @@ export const adminService = {
     return result;
   },
 
-  asignarChoferVagoneta: async (vagonetaId, choferId) => {
+  asignarChoferVagoneta: async (vagonetaId, shuttle_driver_id) => {
     const { data, error } = await supabase
       .from('vagonetas')
-      .update({ chofer_vagoneta_id: choferId || null })
+      // Traducción semántica (React lógico -> backend físico)
+      .update({ chofer_vagoneta_id: shuttle_driver_id || null })
       .eq('id', vagonetaId)
       .select()
       .single();
@@ -121,7 +126,12 @@ export const adminService = {
       .select('*, choferes!faenas_chofer_id_fkey(nombre), clientes(nombre), vehiculos_cliente(marca, modelo)')
       .gte('fecha_hora_programada', new Date().toISOString().split('T')[0]);
     if (error) throw error;
-    return data;
+    // Traducción semántica
+    return data.map(f => ({
+      ...f,
+      faena_id: f.id,
+      gebo_driver_id: f.chofer_id
+    }));
   },
 
   cancelarFaena: async (id) => {
@@ -137,7 +147,7 @@ export const adminService = {
 
   // TRASLADOS
   crearTraslado: async (vagonetaId, puntos) => {
-    // puntos: [{ chofer_id, lat, lng, tipo: 'recogida' | 'bajada' }]
+    // puntos: [{ gebo_driver_id, lat, lng, tipo: 'recogida' | 'bajada' }]
     const { data: traslado, error: errTraslado } = await supabase
       .from('traslados_equipo')
       .insert([{ vagoneta_id: vagonetaId, estado: 'programado' }])
@@ -148,7 +158,7 @@ export const adminService = {
 
     const paradas = puntos.map((p, idx) => ({
       traslado_id: traslado.id,
-      chofer_id: p.chofer_id,
+      chofer_id: p.gebo_driver_id || p.chofer_id,
       orden: idx + 1,
       punto: `POINT(${p.lng} ${p.lat})`,
       tipo: p.tipo === 'bajada' ? 'entrega' : 'recogida',
@@ -161,7 +171,7 @@ export const adminService = {
 
     if (errParadas) throw errParadas;
 
-    return traslado;
+    return { ...traslado, shuttle_route_id: traslado.id };
   },
 
   // TARIFAS (configuracion_negocio)
@@ -215,10 +225,10 @@ export const adminService = {
     return data;
   },
 
-  updateFaenaChofer: async (id, chofer_id) => {
+  updateFaenaChofer: async (id, gebo_driver_id) => {
     const { data, error } = await supabase
       .from('faenas')
-      .update({ chofer_id: chofer_id || null, estado: chofer_id ? 'asignada' : 'programada' })
+      .update({ chofer_id: gebo_driver_id || null, estado: gebo_driver_id ? 'asignada' : 'programada' })
       .eq('id', id)
       .select()
       .single();
