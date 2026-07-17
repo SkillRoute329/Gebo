@@ -54,6 +54,8 @@ const AdminDashboard = () => {
   const [vagonetas, setVagonetas] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [configuracion, setConfiguracion] = useState(null);
+  const [preguntasChecklist, setPreguntasChecklist] = useState([]);
+  const [gastos, setGastos] = useState([]);
 
   // SOS State
   const [alertas, setAlertas] = useState({}); 
@@ -157,12 +159,18 @@ const AdminDashboard = () => {
         }
       }).subscribe();
 
+    const channelGastos = supabase.channel('admin-gastos')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'gastos_ruta' }, () => {
+        fetchInitialData();
+      }).subscribe();
+
     return () => {
       supabase.removeChannel(channelFaenas);
       supabase.removeChannel(channelChoferesRadar);
       supabase.removeChannel(channelPosiciones);
       supabase.removeChannel(channelSOS);
       supabase.removeChannel(channelIncidentes);
+      supabase.removeChannel(channelGastos);
     };
   }, []);
 
@@ -196,11 +204,17 @@ const AdminDashboard = () => {
       const vags = await adminService.getVagonetas();
       setVagonetas(vags);
 
-      const clis = await adminService.getClientes();
-      setClientes(clis);
+      const cliRes = await adminService.getClientes();
+      setClientes(cliRes);
 
-      const conf = await adminService.getConfiguracion();
-      setConfiguracion(conf);
+      const confRes = await adminService.getConfiguracion();
+      setConfiguracion(confRes);
+        
+      const pcRes = await supabase.from('preguntas_checklist').select('*').order('categoria');
+      setPreguntasChecklist(pcRes.data || []);
+
+      const gasRes = await supabase.from('gastos_ruta').select('*').eq('estado_gasto', 'pendiente_aprobacion').order('creado_at', { ascending: false });
+      setGastos(gasRes.data || []);
     } catch (e) {
       console.error(e);
     }
@@ -350,9 +364,62 @@ const AdminDashboard = () => {
                 <label style={{ fontSize: '0.8rem', color: '#aaa' }}>Check-in Anticipado Obligatorio (min)</label>
                 <input type="number" value={configuracion.checkin_anticipado_minutos || 15} onChange={e => setConfiguracion({...configuracion, checkin_anticipado_minutos: e.target.value})} style={{ background: 'black', color: 'white', padding: '8px', border: '1px solid #333' }} />
 
+                <label style={{ fontSize: '0.8rem', color: '#aaa' }}>Límite de Conducción Continua (min)</label>
+                <input type="number" value={configuracion.limite_conduccion_minutos || 240} onChange={e => setConfiguracion({...configuracion, limite_conduccion_minutos: e.target.value})} style={{ background: 'black', color: 'white', padding: '8px', border: '1px solid #333' }} />
+
+                <label style={{ fontSize: '0.8rem', color: '#aaa' }}>Descanso Obligatorio (min)</label>
+                <input type="number" value={configuracion.descanso_obligatorio_minutos || 30} onChange={e => setConfiguracion({...configuracion, descanso_obligatorio_minutos: e.target.value})} style={{ background: 'black', color: 'white', padding: '8px', border: '1px solid #333' }} />
+
+                <label style={{ fontSize: '0.8rem', color: '#aaa' }}>Jornada Laboral Máxima (min)</label>
+                <input type="number" value={configuracion.jornada_maxima_minutos || 480} onChange={e => setConfiguracion({...configuracion, jornada_maxima_minutos: e.target.value})} style={{ background: 'black', color: 'white', padding: '8px', border: '1px solid #333' }} />
+
+                <label style={{ fontSize: '0.8rem', color: '#aaa' }}>Límite Gasto Automático ($)</label>
+                <input type="number" value={configuracion.limite_gasto_automatico || 500} onChange={e => setConfiguracion({...configuracion, limite_gasto_automatico: e.target.value})} style={{ background: 'black', color: 'white', padding: '8px', border: '1px solid #333' }} />
+
                 <Button onClick={() => adminService.updateConfiguracion(configuracion.id, configuracion).then(() => alert("Guardado"))}>Guardar Cambios</Button>
               </div>
             )}
+            
+            <h3 style={{ fontSize: '1rem', color: 'var(--accent-magenta)', marginTop: '24px' }}>Gastos por Aprobar</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {gastos.length === 0 ? <p style={{ fontSize: '0.8rem', color: '#aaa' }}>No hay gastos pendientes.</p> : gastos.map(g => (
+                <div key={g.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', backgroundColor: '#111', borderRadius: '4px', borderLeft: '3px solid #ffcc00' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span style={{ color: 'white', fontSize: '0.9rem', fontWeight: 'bold' }}>$ {g.monto} - {g.categoria.toUpperCase()}</span>
+                    <span style={{ fontSize: '0.7rem', color: '#888' }}>Ticket: {g.comprobante_nro} | {new Date(g.creado_at).toLocaleString()}</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={async () => {
+                      await supabase.from('gastos_ruta').update({ estado_gasto: 'aprobado_manual' }).eq('id', g.id);
+                      fetchInitialData();
+                    }} style={{ background: '#00cc66', color: 'black', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Aprobar</button>
+                    <button onClick={async () => {
+                      await supabase.from('gastos_ruta').update({ estado_gasto: 'rechazado' }).eq('id', g.id);
+                      fetchInitialData();
+                    }} style={{ background: '#cc0000', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer' }}>Rechazar</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <h3 style={{ fontSize: '1rem', color: 'var(--accent-magenta)', marginTop: '24px' }}>Preguntas de Checklist</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {preguntasChecklist.map(p => (
+                <div key={p.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px', backgroundColor: '#111', borderRadius: '4px', borderLeft: p.es_critica ? '3px solid #ff4444' : '3px solid #00ffcc' }}>
+                  <div>
+                    <span style={{ color: p.es_critica ? '#ff4444' : 'white', fontSize: '0.9rem' }}>{p.pregunta}</span>
+                    <span style={{ fontSize: '0.7rem', color: '#888', marginLeft: '8px' }}>[{p.categoria}]</span>
+                  </div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem' }}>
+                    <input type="checkbox" checked={p.activa} onChange={async (e) => {
+                      await supabase.from('preguntas_checklist').update({ activa: e.target.checked }).eq('id', p.id);
+                      fetchInitialData();
+                    }} />
+                    Activa
+                  </label>
+                </div>
+              ))}
+            </div>
           </div>
         );
       default:
